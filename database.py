@@ -61,13 +61,40 @@ def save_signal(symbol, score, reasons):
             score,
             str(reasons)
         )
-
     )
 
 
     conn.commit()
 
     conn.close()
+
+
+
+def signal_exists(symbol):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+
+    cursor.execute(
+        """
+        SELECT 1
+        FROM signals
+        WHERE symbol = ?
+        LIMIT 1
+        """,
+        (symbol,)
+    )
+
+
+    result = cursor.fetchone()
+
+
+    conn.close()
+
+
+    return result is not None
 
 
 
