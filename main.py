@@ -15,6 +15,8 @@ from report import (
     get_report
 )
 
+from bot import send_report
+
 
 
 def run():
@@ -52,8 +54,15 @@ def run():
         )
 
 
-    except Exception as error:
+        send_report()
 
+
+        log_info(
+            "Report sent to Telegram"
+        )
+
+
+    except Exception as error:
 
         add_error()
 
