@@ -1,60 +1,59 @@
-from config import (
-    MIN_SCORE,
-    VOLUME_MULTIPLIER,
-    MIN_BUYER_POWER
-)
+from strategy import get_strategy
 
 
 def calculate_score(stock):
-    """
-    محاسبه امتیاز سهم از 100
-    """
+
+    strategy = get_strategy()
 
     score = 0
     reasons = []
 
-    # حجم غیرعادی
-    volume_ratio = stock.get("volume_ratio", 0)
 
-    if volume_ratio >= VOLUME_MULTIPLIER:
+    # حجم غیرعادی
+    if stock.get("volume_ratio", 0) >= strategy["min_volume_ratio"]:
+
         score += 25
         reasons.append("حجم غیرعادی")
 
 
     # قدرت خریدار
-    buyer_power = stock.get("buyer_power", 0)
+    if stock.get("buyer_power", 0) >= strategy["min_buyer_power"]:
 
-    if buyer_power >= MIN_BUYER_POWER:
         score += 20
         reasons.append("قدرت خریدار مناسب")
 
 
-    # ورود پول حقیقی
-    real_money = stock.get("real_money", 0)
+    # پول حقیقی
+    if strategy["need_real_money"]:
 
-    if real_money > 0:
-        score += 20
-        reasons.append("ورود پول حقیقی")
+        if stock.get("real_money", 0) > 0:
+
+            score += 20
+            reasons.append("ورود پول حقیقی")
 
 
-    # روند قیمت
-    trend = stock.get("trend", False)
+    # روند مثبت
+    if strategy["need_positive_trend"]:
 
-    if trend:
-        score += 20
-        reasons.append("روند صعودی")
+        if stock.get("trend", False):
+
+            score += 20
+            reasons.append("روند مثبت")
 
 
     # شکست مقاومت
-    breakout = stock.get("breakout", False)
+    if stock.get("breakout", False):
 
-    if breakout:
         score += 15
         reasons.append("شکست مقاومت")
 
 
     return {
+
         "score": score,
+
         "reasons": reasons,
-        "signal": score >= MIN_SCORE
-  }
+
+        "signal": score >= strategy["min_score"]
+
+    }
