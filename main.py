@@ -9,6 +9,12 @@ from logger import (
 
 from market_time import is_market_open
 
+from report import (
+    add_scan,
+    add_error,
+    get_report
+)
+
 
 
 def run():
@@ -23,7 +29,7 @@ def run():
         if not is_market_open():
 
             log_info(
-                "Market is closed. Scan skipped."
+                "Market closed"
             )
 
             return
@@ -31,15 +37,26 @@ def run():
 
         create_database()
 
+
+        add_scan()
+
+
         scan_market()
 
 
+        report = get_report()
+
+
         log_info(
-            "Hunter finished successfully"
+            f"Report: {report}"
         )
 
 
     except Exception as error:
+
+
+        add_error()
+
 
         log_error(
             str(error)
