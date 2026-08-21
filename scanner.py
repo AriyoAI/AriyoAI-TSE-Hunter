@@ -13,6 +13,8 @@ from signal_filter import is_quality_signal
 
 from signal_history import save_history
 
+from report import add_signal
+
 from logger import (
     log_info,
     log_error
@@ -96,7 +98,6 @@ def scan_market():
             continue
 
 
-        # ذخیره تاریخچه سیگنال
         save_history(
             symbol,
             result["score"]
@@ -110,6 +111,8 @@ def scan_market():
 
 
         send_message(message)
+
+        add_signal()
 
 
         save_signal(
