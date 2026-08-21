@@ -24,93 +24,105 @@ TSE_URL = (
 
 def get_real_data():
 
-    try:
-
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
-
-
-        response = requests.get(
-            TSE_URL,
-            headers=headers,
-            timeout=(10, 60)
-        )
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 "
+            "(Windows NT 10.0; Win64; x64)"
+        ),
+        "Accept": "application/json"
+    }
 
 
-        response.raise_for_status()
+    for attempt in range(1, 4):
+
+        try:
+
+            log_info(
+                f"TSE request attempt: {attempt}"
+            )
 
 
-        raw = response.json()
+            response = requests.get(
+                TSE_URL,
+                headers=headers,
+                timeout=(5, 20)
+            )
 
 
-        market = raw.get(
-            "marketwatch",
-            []
-        )
+            response.raise_for_status()
 
 
-        stocks = []
+            raw = response.json()
 
 
-        for item in market:
+            market = (
+                raw.get("marketwatch")
+                or raw.get("marketWatch")
+                or []
+            )
 
-            stock = {
 
-                "symbol": item.get(
+            stocks = []
+
+
+            for item in market:
+
+                symbol = item.get(
                     "lVal18AFC",
                     ""
-                ),
-
-                "price": item.get(
-                    "pDrCotVal",
-                    0
-                ),
-
-                "volume_ratio": 1,
-
-                "buyer_power": 1,
-
-                "real_money": 0,
-
-                "trend": False,
-
-                "breakout": False,
-
-                "time": datetime.now().isoformat()
-
-            }
+                )
 
 
-            if stock["symbol"]:
-
-                stocks.append(stock)
-
-
-        log_info(
-            f"Real TSE symbols loaded: {len(stocks)}"
-        )
+                if not symbol:
+                    continue
 
 
-        return stocks
+                stocks.append({
+
+                    "symbol": symbol,
+
+                    "price": item.get(
+                        "pDrCotVal",
+                        0
+                    ),
+
+                    "volume_ratio": 1,
+
+                    "buyer_power": 1,
+
+                    "real_money": 0,
+
+                    "trend": False,
+
+                    "breakout": False,
+
+                    "time": datetime.now().isoformat()
+
+                })
 
 
-    except requests.exceptions.Timeout:
-
-        log_error(
-            "TSE data request timed out"
-        )
-
-        return []
+            log_info(
+                f"Real TSE symbols loaded: {len(stocks)}"
+            )
 
 
-    except Exception as error:
+            return stocks
 
-        log_error(
-            str(error)
-        )
 
-        return []
+        except Exception as error:
+
+            log_error(
+                f"TSE attempt {attempt} failed: {error}"
+            )
+
+
+
+    log_error(
+        "TSE source unavailable after retries"
+    )
+
+
+    return []
 
 
 
