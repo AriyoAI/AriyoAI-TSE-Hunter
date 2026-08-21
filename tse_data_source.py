@@ -10,10 +10,6 @@ from logger import (
 )
 
 
-# ---------------------------------
-# Mock Data (Test Mode)
-# ---------------------------------
-
 def get_mock_data():
 
     return [
@@ -30,35 +26,25 @@ def get_mock_data():
     ]
 
 
-# ---------------------------------
-# Real Data Connection
-# ---------------------------------
-
 def get_real_data():
 
     """
-    محل اتصال داده واقعی بورس ایران
+    اتصال منبع واقعی بورس ایران
 
-    خروجی استاندارد AriyoAI:
-    symbol
-    price
-    volume_ratio
-    buyer_power
-    real_money
-    trend
-    breakout
-    time
+    محل تبدیل داده خام به استاندارد AriyoAI
     """
 
     try:
 
-        # این آدرس بعد از انتخاب endpoint نهایی تکمیل می‌شود
-        url = ""
+        # آدرس منبع واقعی پس از تست نهایی اینجا قرار می‌گیرد
 
-        if not url:
+        url = None
 
-            log_info(
-                "Real data source not configured yet"
+
+        if url is None:
+
+            log_error(
+                "Real market source is not configured"
             )
 
             return []
@@ -73,54 +59,7 @@ def get_real_data():
         response.raise_for_status()
 
 
-        raw_data = response.json()
-
-
-        stocks = []
-
-
-        for item in raw_data:
-
-            stocks.append({
-
-                "symbol": item.get("symbol"),
-
-                "price": item.get(
-                    "price",
-                    0
-                ),
-
-                "volume_ratio": item.get(
-                    "volume_ratio",
-                    0
-                ),
-
-                "buyer_power": item.get(
-                    "buyer_power",
-                    0
-                ),
-
-                "real_money": item.get(
-                    "real_money",
-                    0
-                ),
-
-                "trend": item.get(
-                    "trend",
-                    False
-                ),
-
-                "breakout": item.get(
-                    "breakout",
-                    False
-                ),
-
-                "time": datetime.now().isoformat()
-
-            })
-
-
-        return stocks
+        return response.json()
 
 
     except Exception as error:
@@ -132,10 +71,6 @@ def get_real_data():
         return []
 
 
-# ---------------------------------
-# Main Provider
-# ---------------------------------
-
 def get_tse_data():
 
     try:
@@ -143,10 +78,6 @@ def get_tse_data():
         if USE_MOCK_DATA:
 
             data = get_mock_data()
-
-            log_info(
-                "Using mock data"
-            )
 
         else:
 
