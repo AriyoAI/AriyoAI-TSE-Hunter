@@ -53,12 +53,9 @@ def run():
 
         if not is_market_open():
 
-    log_info(
-        "Market closed - running test scan mode"
-    )
+            log_info(
+                "Market closed - running test scan mode"
             )
-
-            return
 
 
         create_database()
