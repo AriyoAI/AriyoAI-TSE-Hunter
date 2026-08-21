@@ -1,15 +1,22 @@
 import sqlite3
-from datetime import datetime
 
 
-DB_NAME = "hunter.db"
+DB_NAME = "ariyoai.db"
+
+
+
+def get_connection():
+
+    return sqlite3.connect(DB_NAME)
+
 
 
 def create_database():
 
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
 
     cursor = conn.cursor()
+
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS signals (
@@ -22,69 +29,68 @@ def create_database():
 
         reasons TEXT,
 
-        created_at TEXT
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
     )
     """)
 
+
     conn.commit()
+
     conn.close()
 
 
 
 def save_signal(symbol, score, reasons):
 
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
 
     cursor = conn.cursor()
+
 
     cursor.execute(
         """
         INSERT INTO signals
-        (symbol, score, reasons, created_at)
+        (symbol, score, reasons)
 
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?)
         """,
+
         (
             symbol,
             score,
-            ",".join(reasons),
-            datetime.now().isoformat()
+            str(reasons)
         )
+
     )
 
+
     conn.commit()
+
     conn.close()
 
 
 
-def signal_exists(symbol):
+def get_signals():
 
-    conn = sqlite3.connect(DB_NAME)
+    conn = get_connection()
 
     cursor = conn.cursor()
 
+
     cursor.execute(
         """
-        SELECT symbol
+        SELECT *
         FROM signals
-        WHERE symbol=?
-        """,
-        (symbol,)
+        ORDER BY id DESC
+        """
     )
 
-    result = cursor.fetchone()
+
+    data = cursor.fetchall()
+
 
     conn.close()
 
-    return result is not None
 
-
-
-if __name__ == "__main__":
-
-    create_database()
-
-    print(
-        "Database ready 🟢"
-    )
+    return data
