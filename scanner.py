@@ -1,12 +1,16 @@
 from analyzer import calculate_score
 from bot import send_message
+
 from database import (
     create_database,
     save_signal,
     signal_exists
 )
 
+from market_data import get_market_data
+
 from datetime import datetime
+
 
 
 def format_signal(stock, result):
@@ -19,10 +23,13 @@ def format_signal(stock, result):
     return f"""
 🦅 <b>AriyoAI TSE Hunter</b>
 
-🚨 <b>فرصت تحلیلی جدید</b>
+🚨 <b>سیگنال تحلیلی جدید</b>
 
 📌 نماد:
 <b>{stock['symbol']}</b>
+
+💰 قیمت:
+{stock.get('price', '-')}
 
 ⭐ امتیاز:
 <b>{result['score']}/100</b>
@@ -33,40 +40,25 @@ def format_signal(stock, result):
 ⏰ زمان:
 {datetime.now().strftime("%Y-%m-%d %H:%M")}
 
-⚠️ این پیام تحلیل داده‌های بازار است، نه تضمین سود.
+⚠️ این فقط هشدار تحلیلی است.
 """
 
-
-def get_test_market():
-
-    # فعلاً داده آزمایشی
-    # مرحله بعد با داده واقعی بورس جایگزین می‌شود
-
-    return [
-        {
-            "symbol": "TEST",
-            "volume_ratio": 5,
-            "buyer_power": 4,
-            "real_money": 3,
-            "trend": True,
-            "breakout": True
-        }
-    ]
 
 
 def scan_market():
 
-    stocks = get_test_market()
+    stocks = get_market_data()
 
     for stock in stocks:
 
         result = calculate_score(stock)
 
+
         if result["signal"]:
 
             symbol = stock["symbol"]
 
-            # جلوگیری از پیام تکراری
+
             if signal_exists(symbol):
                 continue
 
@@ -87,11 +79,13 @@ def scan_market():
             )
 
 
+
 def main():
 
     create_database()
 
     scan_market()
+
 
 
 if __name__ == "__main__":
