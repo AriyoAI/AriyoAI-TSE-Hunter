@@ -11,6 +11,8 @@ from data_provider import MarketProvider
 
 from signal_filter import is_quality_signal
 
+from signal_history import save_history
+
 from logger import (
     log_info,
     log_error
@@ -92,6 +94,13 @@ def scan_market():
             )
 
             continue
+
+
+        # ذخیره تاریخچه سیگنال
+        save_history(
+            symbol,
+            result["score"]
+        )
 
 
         message = format_signal(
