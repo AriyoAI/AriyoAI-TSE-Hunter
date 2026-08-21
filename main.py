@@ -17,6 +17,8 @@ from report import (
 
 from bot import send_report
 
+from health_check import system_health
+
 
 
 def run():
@@ -26,6 +28,18 @@ def run():
         log_info(
             "AriyoAI Hunter started"
         )
+
+
+        health = system_health()
+
+
+        if not all(health.values()):
+
+            log_error(
+                f"System health failed: {health}"
+            )
+
+            return
 
 
         if not is_market_open():
@@ -65,7 +79,6 @@ def run():
     except Exception as error:
 
         add_error()
-
 
         log_error(
             str(error)
