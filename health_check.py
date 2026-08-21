@@ -1,20 +1,55 @@
-from market_data import get_market_data
+import os
+
+from database import get_connection
 
 
-def check_market():
 
-    data = get_market_data()
+def check_database():
 
-    if not data:
-        print("❌ No market data")
-        return
+    try:
 
-    print("✅ Market data available")
-    print(f"Symbols found: {len(data)}")
+        conn = get_connection()
 
-    for item in data[:3]:
-        print(item)
+        conn.close()
+
+        return True
 
 
-if __name__ == "__main__":
-    check_market()
+    except Exception:
+
+        return False
+
+
+
+def check_telegram():
+
+    return bool(
+
+        os.getenv(
+            "TELEGRAM_BOT_TOKEN"
+        )
+
+        and
+
+        os.getenv(
+            "TELEGRAM_CHAT_ID"
+        )
+
+    )
+
+
+
+def system_health():
+
+    return {
+
+        "database":
+
+            check_database(),
+
+
+        "telegram":
+
+            check_telegram()
+
+    }
