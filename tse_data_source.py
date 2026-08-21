@@ -7,20 +7,27 @@ from logger import (
     log_error
 )
 
+from config import DATA_SOURCE
+
+
 
 def get_tse_data():
 
     """
-    لایه دریافت داده بورس ایران
+    دریافت داده بورس ایران
 
-    این نسخه آماده اتصال به منبع عمومی است.
-    خروجی استاندارد به سیستم تحلیل می‌دهد.
+    آماده اتصال به منبع واقعی TSE
     """
 
     try:
 
-        # فعلاً محل اتصال منبع داده عمومی
-        # بعد از انتخاب API واقعی این بخش تکمیل می‌شود
+        log_info(
+            f"Data source: {DATA_SOURCE}"
+        )
+
+
+        # این بخش محل اتصال API واقعی بورس خواهد بود
+        # بعد از انتخاب منبع داده تکمیل می‌شود
 
         data = []
 
@@ -31,6 +38,15 @@ def get_tse_data():
 
 
         return data
+
+
+    except requests.exceptions.RequestException as error:
+
+        log_error(
+            f"Connection error: {error}"
+        )
+
+        return []
 
 
     except Exception as error:
