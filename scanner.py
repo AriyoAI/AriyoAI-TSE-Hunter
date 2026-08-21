@@ -7,7 +7,7 @@ from database import (
     signal_exists
 )
 
-from market_data import get_market_data
+from data_provider import MarketProvider
 
 from signal_filter import is_quality_signal
 
@@ -54,7 +54,10 @@ def format_signal(stock, result):
 
 def scan_market():
 
-    stocks = get_market_data()
+    provider = MarketProvider()
+
+    stocks = provider.fetch()
+
 
     log_info(
         f"Scan started. Symbols: {len(stocks)}"
@@ -70,13 +73,12 @@ def scan_market():
             continue
 
 
-        if not is_quality_signal(
-            stock,
-            result
-        ):
+        if not is_quality_signal(stock, result):
+
             log_info(
                 f"Low quality ignored: {stock['symbol']}"
             )
+
             continue
 
 
