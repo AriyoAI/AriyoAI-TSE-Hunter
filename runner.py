@@ -4,6 +4,8 @@ from main import run
 
 from logger import log_error
 
+from config import SCAN_INTERVAL
+
 
 
 def start():
@@ -22,7 +24,9 @@ def start():
             )
 
 
-        time.sleep(60)
+        time.sleep(
+            SCAN_INTERVAL
+        )
 
 
 
