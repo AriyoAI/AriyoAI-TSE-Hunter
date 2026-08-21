@@ -4,10 +4,10 @@ from datetime import datetime
 def get_market_data():
 
     """
-    لایه دریافت داده بازار
+    دریافت داده بازار
 
-    فعلاً داده آزمایشی است.
-    در مرحله بعد به منبع واقعی بازار وصل می‌شود.
+    فعلاً حالت آزمایشی.
+    در مرحله بعد به منبع واقعی وصل می‌شود.
     """
 
     return [
@@ -31,9 +31,21 @@ def get_market_data():
     ]
 
 
-if __name__ == "__main__":
 
-    data = get_market_data()
+def validate_market_data(data):
+
+    required_fields = [
+        "symbol",
+        "price",
+        "volume_ratio",
+        "buyer_power"
+    ]
 
     for item in data:
-        print(item)
+
+        for field in required_fields:
+
+            if field not in item:
+                return False
+
+    return True
