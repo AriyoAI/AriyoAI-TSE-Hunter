@@ -1,48 +1,59 @@
+import os
 import requests
-from config import (
-    TELEGRAM_BOT_TOKEN,
-    TELEGRAM_CHAT_ID
+
+from report_sender import build_report_message
+
+
+
+BOT_TOKEN = os.getenv(
+    "TELEGRAM_BOT_TOKEN"
+)
+
+CHAT_ID = os.getenv(
+    "TELEGRAM_CHAT_ID"
 )
 
 
-def send_message(text):
-    """
-    ارسال پیام به تلگرام
-    """
 
-    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
-        raise ValueError(
-            "Telegram settings are missing"
+def send_message(message):
+
+    if not BOT_TOKEN or not CHAT_ID:
+
+        raise Exception(
+            "Telegram configuration missing"
         )
+
 
     url = (
         f"https://api.telegram.org/"
-        f"bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        f"bot{BOT_TOKEN}/sendMessage"
     )
 
-    data = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": text,
+
+    payload = {
+
+        "chat_id": CHAT_ID,
+
+        "text": message,
+
         "parse_mode": "HTML"
+
     }
+
 
     response = requests.post(
         url,
-        data=data,
-        timeout=15
+        json=payload,
+        timeout=10
     )
 
-    return response.json()
+
+    response.raise_for_status()
 
 
-if __name__ == "__main__":
 
-    send_message(
-        """
-🦅 <b>AriyoAI TSE Hunter</b>
+def send_report():
 
-✅ موتور پیام‌رسان فعال شد
+    message = build_report_message()
 
-آماده دریافت سیگنال‌های تحلیلی هستیم 📊
-"""
-    )
+    send_message(message)
