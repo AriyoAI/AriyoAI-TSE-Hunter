@@ -2,64 +2,96 @@ import requests
 
 from datetime import datetime
 
-from config import USE_MOCK_DATA
-
 from logger import (
     log_info,
     log_error
 )
 
 
-def get_mock_data():
-
-    return [
-        {
-            "symbol": "TEST",
-            "price": 1000,
-            "volume_ratio": 5,
-            "buyer_power": 4,
-            "real_money": 3,
-            "trend": True,
-            "breakout": True,
-            "time": datetime.now().isoformat()
-        }
-    ]
+TSE_URL = (
+    "https://cdn.tsetmc.com/api/"
+    "ClosingPrice/GetMarketWatch"
+    "?market=0"
+    "&paperTypes[0]=1"
+    "&paperTypes[1]=2"
+    "&paperTypes[2]=3"
+    "&withBestLimits=false"
+    "&hEven=0"
+    "&RefID=0"
+)
 
 
 def get_real_data():
 
-    """
-    اتصال منبع واقعی بورس ایران
-
-    محل تبدیل داده خام به استاندارد AriyoAI
-    """
-
     try:
 
-        # آدرس منبع واقعی پس از تست نهایی اینجا قرار می‌گیرد
-
-        url = None
-
-
-        if url is None:
-
-            log_error(
-                "Real market source is not configured"
-            )
-
-            return []
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
 
 
         response = requests.get(
-            url,
-            timeout=10
+            TSE_URL,
+            headers=headers,
+            timeout=15
         )
 
 
         response.raise_for_status()
 
 
-        return response.json()
+        raw = response.json()
+
+
+        market = raw.get(
+            "marketwatch",
+            []
+        )
+
+
+        stocks = []
+
+
+        for item in market:
+
+            stock = {
+
+                "symbol": item.get(
+                    "lVal18AFC",
+                    ""
+                ),
+
+                "price": item.get(
+                    "pDrCotVal",
+                    0
+                ),
+
+                "volume_ratio": 1,
+
+                "buyer_power": 1,
+
+                "real_money": 0,
+
+                "trend": False,
+
+                "breakout": False,
+
+                "time": datetime.now().isoformat()
+
+            }
+
+
+            if stock["symbol"]:
+
+                stocks.append(stock)
+
+
+        log_info(
+            f"Real TSE symbols loaded: {len(stocks)}"
+        )
+
+
+        return stocks
 
 
     except Exception as error:
@@ -69,33 +101,9 @@ def get_real_data():
         )
 
         return []
+
 
 
 def get_tse_data():
 
-    try:
-
-        if USE_MOCK_DATA:
-
-            data = get_mock_data()
-
-        else:
-
-            data = get_real_data()
-
-
-        log_info(
-            f"TSE symbols loaded: {len(data)}"
-        )
-
-
-        return data
-
-
-    except Exception as error:
-
-        log_error(
-            str(error)
-        )
-
-        return []
+    return get_real_data()
