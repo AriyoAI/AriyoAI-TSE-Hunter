@@ -9,6 +9,11 @@ from database import (
 
 from market_data import get_market_data
 
+from logger import (
+    log_info,
+    log_error
+)
+
 from datetime import datetime
 
 
@@ -40,7 +45,7 @@ def format_signal(stock, result):
 ⏰ زمان:
 {datetime.now().strftime("%Y-%m-%d %H:%M")}
 
-⚠️ این فقط هشدار تحلیلی است.
+⚠️ هشدار تحلیلی است، نه تضمین سود.
 """
 
 
@@ -48,6 +53,11 @@ def format_signal(stock, result):
 def scan_market():
 
     stocks = get_market_data()
+
+    log_info(
+        f"Market scan started. Symbols: {len(stocks)}"
+    )
+
 
     for stock in stocks:
 
@@ -60,7 +70,17 @@ def scan_market():
 
 
             if signal_exists(symbol):
+
+                log_info(
+                    f"Duplicate signal ignored: {symbol}"
+                )
+
                 continue
+
+
+            log_info(
+                f"Signal found: {symbol} Score: {result['score']}"
+            )
 
 
             message = format_signal(
@@ -82,11 +102,25 @@ def scan_market():
 
 def main():
 
-    create_database()
+    try:
 
-    scan_market()
+        create_database()
+
+        scan_market()
+
+        log_info(
+            "Scan completed successfully"
+        )
+
+
+    except Exception as error:
+
+        log_error(
+            str(error)
+        )
 
 
 
 if __name__ == "__main__":
+
     main()
