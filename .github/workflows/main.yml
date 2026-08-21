@@ -13,8 +13,33 @@ jobs:
           BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          curl --fail --silent --show-error \
-            -X POST \
-            "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-            --data-urlencode "chat_id=${CHAT_ID}" \
-            --data-urlencode "text=🟢 AriyoAI TSE Hunter — اتصال تلگرام موفق شد! 🦅📊"
+          python3 - <<'PY'
+          import os
+          import json
+          import urllib.request
+          import urllib.parse
+
+          token = os.environ["BOT_TOKEN"]
+          chat_id = os.environ["CHAT_ID"]
+
+          url = f"https://api.telegram.org/bot{token}/sendMessage"
+
+          data = urllib.parse.urlencode({
+              "chat_id": chat_id,
+              "text": "🟢 AriyoAI TSE Hunter — اتصال تلگرام موفق شد! 🦅📊"
+          }).encode()
+
+          request = urllib.request.Request(
+              url,
+              data=data,
+              method="POST"
+          )
+
+          with urllib.request.urlopen(request, timeout=20) as response:
+              result = json.loads(response.read().decode())
+
+          print(result)
+
+          if not result.get("ok"):
+              raise SystemExit("Telegram API returned an error")
+          PY
