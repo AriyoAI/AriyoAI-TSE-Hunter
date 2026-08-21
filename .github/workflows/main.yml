@@ -1,45 +1,33 @@
-name: AriyoAI Telegram Test
+name: AriyoAI Hunter Main
 
 on:
   workflow_dispatch:
 
 jobs:
-  test:
+  run-hunter:
+
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Telegram message
-        env:
-          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+
+      - name: Install dependencies
         run: |
-          python3 - <<'PY'
-          import os
-          import json
-          import urllib.request
-          import urllib.parse
+          pip install -r requirements.txt
 
-          token = os.environ["BOT_TOKEN"]
-          chat_id = os.environ["CHAT_ID"]
 
-          url = f"https://api.telegram.org/bot{token}/sendMessage"
-
-          data = urllib.parse.urlencode({
-              "chat_id": chat_id,
-              "text": "🟢 AriyoAI TSE Hunter — اتصال تلگرام موفق شد! 🦅📊"
-          }).encode()
-
-          request = urllib.request.Request(
-              url,
-              data=data,
-              method="POST"
-          )
-
-          with urllib.request.urlopen(request, timeout=20) as response:
-              result = json.loads(response.read().decode())
-
-          print(result)
-
-          if not result.get("ok"):
-              raise SystemExit("Telegram API returned an error")
-          PY
+      - name: Run AriyoAI Hunter
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python main.py
