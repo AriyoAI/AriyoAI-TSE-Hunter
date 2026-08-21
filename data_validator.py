@@ -6,10 +6,22 @@ def validate_data(data):
 
 
     required = [
+
         "symbol",
+
         "price",
+
         "volume_ratio",
-        "buyer_power"
+
+        "buyer_power",
+
+        "real_money",
+
+        "trend",
+
+        "breakout",
+
+        "time"
     ]
 
 
@@ -20,6 +32,16 @@ def validate_data(data):
             if field not in item:
 
                 return False
+
+
+        if not isinstance(item["symbol"], str):
+
+            return False
+
+
+        if item["price"] <= 0:
+
+            return False
 
 
     return True
