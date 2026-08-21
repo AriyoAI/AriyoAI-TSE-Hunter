@@ -21,6 +21,8 @@ from health_check import system_health
 
 from alert import send_error_alert
 
+from telegram_listener import process_updates
+
 
 
 def run():
@@ -46,6 +48,9 @@ def run():
             return
 
 
+        process_updates()
+
+
         if not is_market_open():
 
             log_info(
@@ -56,6 +61,7 @@ def run():
 
 
         create_database()
+
 
         add_scan()
 
@@ -72,6 +78,11 @@ def run():
 
 
         send_report()
+
+
+        log_info(
+            "Report sent successfully"
+        )
 
 
     except Exception as error:
