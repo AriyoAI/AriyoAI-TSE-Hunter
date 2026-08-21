@@ -1,15 +1,38 @@
 import os
+from dotenv import load_dotenv
 
-# Telegram
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-# Hunter Settings
+load_dotenv()
 
-MIN_SCORE = 75
 
-VOLUME_MULTIPLIER = 3
+# Telegram Configuration
 
-MIN_BUYER_POWER = 2
+TELEGRAM_BOT_TOKEN = os.getenv(
+    "TELEGRAM_BOT_TOKEN"
+)
 
-SCAN_INTERVAL = 300
+TELEGRAM_CHAT_ID = os.getenv(
+    "TELEGRAM_CHAT_ID"
+)
+
+
+# Market Configuration
+
+MARKET_TYPE = "TSE"
+
+DATA_SOURCE = "PUBLIC"
+
+
+# Scanner Configuration
+
+SCAN_INTERVAL = 300   # seconds (5 minutes)
+
+
+# Analysis Configuration
+
+MIN_SCORE = 80
+
+
+# System Configuration
+
+ENVIRONMENT = "production"
