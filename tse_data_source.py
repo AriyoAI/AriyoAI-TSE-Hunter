@@ -9,6 +9,9 @@ from logger import (
 
 from tse_fallback_source import get_fallback_data
 
+from demo_data_source import get_demo_data
+
+
 
 TSE_URL = (
     "https://cdn.tsetmc.com/api/"
@@ -121,12 +124,27 @@ def get_real_data():
         return data
 
 
+
     log_info(
         "Switching to TSE fallback source"
     )
 
 
-    return get_fallback_data()
+    data = get_fallback_data()
+
+
+    if data:
+
+        return data
+
+
+
+    log_info(
+        "Switching to Demo Provider"
+    )
+
+
+    return get_demo_data()
 
 
 
