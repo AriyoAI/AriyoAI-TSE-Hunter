@@ -19,6 +19,8 @@ from bot import send_report
 
 from health_check import system_health
 
+from alert import send_error_alert
+
 
 
 def run():
@@ -35,9 +37,11 @@ def run():
 
         if not all(health.values()):
 
-            log_error(
-                f"System health failed: {health}"
-            )
+            error = f"System health failed: {health}"
+
+            log_error(error)
+
+            send_error_alert(error)
 
             return
 
@@ -52,7 +56,6 @@ def run():
 
 
         create_database()
-
 
         add_scan()
 
@@ -71,16 +74,18 @@ def run():
         send_report()
 
 
-        log_info(
-            "Report sent to Telegram"
-        )
-
-
     except Exception as error:
+
 
         add_error()
 
+
         log_error(
+            str(error)
+        )
+
+
+        send_error_alert(
             str(error)
         )
 
