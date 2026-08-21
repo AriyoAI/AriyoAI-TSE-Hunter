@@ -38,7 +38,7 @@ DATA_SOURCE = "PUBLIC"
 # False:
 # استفاده از منبع واقعی بازار
 
-USE_MOCK_DATA = True
+USE_MOCK_DATA = False
 
 
 # =========================
