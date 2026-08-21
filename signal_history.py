@@ -1,4 +1,17 @@
-from database import get_signals
+from database import (
+    get_signals,
+    save_signal
+)
+
+
+
+def save_history(symbol, score):
+
+    save_signal(
+        symbol,
+        score,
+        "Signal history saved"
+    )
 
 
 
