@@ -2,6 +2,7 @@ import os
 import requests
 
 from report_sender import build_report_message
+from status import get_system_status
 
 
 
@@ -55,5 +56,40 @@ def send_message(message):
 def send_report():
 
     message = build_report_message()
+
+    send_message(message)
+
+
+
+def send_status():
+
+    status = get_system_status()
+
+    health = status["health"]
+
+
+    message = f"""
+🦅 <b>AriyoAI Status</b>
+
+🗄️ Database:
+{"🟢 OK" if health["database"] else "🔴 ERROR"}
+
+📱 Telegram:
+{"🟢 OK" if health["telegram"] else "🔴 ERROR"}
+
+
+🔎 Scans:
+{status["scans"]}
+
+🚨 Signals:
+{status["signals"]}
+
+📊 Stored Signals:
+{status["stored_signals"]}
+
+⭐ Average Score:
+{status["average_score"]}
+"""
+
 
     send_message(message)
