@@ -1,34 +1,13 @@
-from datetime import datetime
+from tse_data_source import get_tse_data
 
 
 def get_market_data():
-
     """
-    دریافت داده بازار
-
-    فعلاً حالت آزمایشی.
-    در مرحله بعد به منبع واقعی وصل می‌شود.
+    دریافت داده بازار بورس ایران
+    داده از لایه TSE Data Source دریافت می‌شود.
     """
 
-    return [
-        {
-            "symbol": "TEST",
-
-            "price": 1000,
-
-            "volume_ratio": 5,
-
-            "buyer_power": 4,
-
-            "real_money": 3,
-
-            "trend": True,
-
-            "breakout": True,
-
-            "time": datetime.now().isoformat()
-        }
-    ]
+    return get_tse_data()
 
 
 
@@ -38,14 +17,20 @@ def validate_market_data(data):
         "symbol",
         "price",
         "volume_ratio",
-        "buyer_power"
+        "buyer_power",
+        "real_money",
+        "trend",
+        "breakout"
     ]
+
 
     for item in data:
 
         for field in required_fields:
 
             if field not in item:
+
                 return False
+
 
     return True
