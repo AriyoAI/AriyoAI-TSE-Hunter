@@ -9,6 +9,8 @@ from database import (
 
 from market_data import get_market_data
 
+from signal_filter import is_quality_signal
+
 from logger import (
     log_info,
     log_error
@@ -28,7 +30,7 @@ def format_signal(stock, result):
     return f"""
 🦅 <b>AriyoAI TSE Hunter</b>
 
-🚨 <b>سیگنال تحلیلی جدید</b>
+🚨 <b>سیگنال با کیفیت</b>
 
 📌 نماد:
 <b>{stock['symbol']}</b>
@@ -45,7 +47,7 @@ def format_signal(stock, result):
 ⏰ زمان:
 {datetime.now().strftime("%Y-%m-%d %H:%M")}
 
-⚠️ هشدار تحلیلی است، نه تضمین سود.
+⚠️ هشدار تحلیلی است.
 """
 
 
@@ -55,7 +57,7 @@ def scan_market():
     stocks = get_market_data()
 
     log_info(
-        f"Market scan started. Symbols: {len(stocks)}"
+        f"Scan started. Symbols: {len(stocks)}"
     )
 
 
@@ -64,39 +66,51 @@ def scan_market():
         result = calculate_score(stock)
 
 
-        if result["signal"]:
+        if not result["signal"]:
+            continue
 
-            symbol = stock["symbol"]
+
+        if not is_quality_signal(
+            stock,
+            result
+        ):
+            log_info(
+                f"Low quality ignored: {stock['symbol']}"
+            )
+            continue
 
 
-            if signal_exists(symbol):
+        symbol = stock["symbol"]
 
-                log_info(
-                    f"Duplicate signal ignored: {symbol}"
-                )
 
-                continue
-
+        if signal_exists(symbol):
 
             log_info(
-                f"Signal found: {symbol} Score: {result['score']}"
+                f"Duplicate ignored: {symbol}"
             )
 
-
-            message = format_signal(
-                stock,
-                result
-            )
+            continue
 
 
-            send_message(message)
+        message = format_signal(
+            stock,
+            result
+        )
 
 
-            save_signal(
-                symbol,
-                result["score"],
-                result["reasons"]
-            )
+        send_message(message)
+
+
+        save_signal(
+            symbol,
+            result["score"],
+            result["reasons"]
+        )
+
+
+        log_info(
+            f"Signal sent: {symbol}"
+        )
 
 
 
@@ -107,10 +121,6 @@ def main():
         create_database()
 
         scan_market()
-
-        log_info(
-            "Scan completed successfully"
-        )
 
 
     except Exception as error:
