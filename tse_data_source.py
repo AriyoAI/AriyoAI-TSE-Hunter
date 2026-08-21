@@ -1,4 +1,11 @@
+import requests
+
 from datetime import datetime
+
+from logger import (
+    log_info,
+    log_error
+)
 
 
 def get_tse_data():
@@ -6,30 +13,30 @@ def get_tse_data():
     """
     لایه دریافت داده بورس ایران
 
-    آماده برای اتصال به منبع واقعی TSE
+    این نسخه آماده اتصال به منبع عمومی است.
+    خروجی استاندارد به سیستم تحلیل می‌دهد.
     """
 
-    data = [
+    try:
 
-        {
-            "symbol": "TEST",
+        # فعلاً محل اتصال منبع داده عمومی
+        # بعد از انتخاب API واقعی این بخش تکمیل می‌شود
 
-            "price": 1000,
-
-            "volume_ratio": 5,
-
-            "buyer_power": 4,
-
-            "real_money": 3,
-
-            "trend": True,
-
-            "breakout": True,
-
-            "time": datetime.now().isoformat()
-        }
-
-    ]
+        data = []
 
 
-    return data
+        log_info(
+            f"TSE data received: {len(data)} symbols"
+        )
+
+
+        return data
+
+
+    except Exception as error:
+
+        log_error(
+            str(error)
+        )
+
+        return []
