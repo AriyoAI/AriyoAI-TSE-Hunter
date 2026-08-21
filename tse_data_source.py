@@ -21,6 +21,7 @@ TSE_URL = (
 )
 
 
+
 def get_real_data():
 
     try:
@@ -33,7 +34,7 @@ def get_real_data():
         response = requests.get(
             TSE_URL,
             headers=headers,
-            timeout=15
+            timeout=(10, 60)
         )
 
 
@@ -92,6 +93,15 @@ def get_real_data():
 
 
         return stocks
+
+
+    except requests.exceptions.Timeout:
+
+        log_error(
+            "TSE data request timed out"
+        )
+
+        return []
 
 
     except Exception as error:
