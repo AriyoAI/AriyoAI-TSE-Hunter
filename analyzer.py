@@ -1,6 +1,8 @@
 from scoring import calculate_market_score
 from strategy import get_strategy
 
+from logger import log_info
+
 
 
 def calculate_score(stock):
@@ -13,9 +15,26 @@ def calculate_score(stock):
     )
 
 
-    score = result["score"]
+    score = result.get(
+        "score",
+        0
+    )
 
-    reasons = result["reasons"]
+
+    reasons = result.get(
+        "reasons",
+        []
+    )
+
+
+    signal = (
+        score >= strategy["min_score"]
+    )
+
+
+    log_info(
+        f"Analysis {stock.get('symbol', '-')}: {score}/100"
+    )
 
 
     return {
@@ -24,6 +43,6 @@ def calculate_score(stock):
 
         "reasons": reasons,
 
-        "signal": score >= strategy["min_score"]
+        "signal": signal
 
     }
