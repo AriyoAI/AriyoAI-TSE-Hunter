@@ -7,6 +7,9 @@ from logger import (
     log_error
 )
 
+from market_indicators import calculate_indicators
+
+
 
 TSE_URL = (
     "https://cdn.tsetmc.com/api/"
@@ -72,19 +75,41 @@ def get_real_tse_data():
                     0
                 ),
 
-                "volume_ratio": 1,
+                "volume": item.get(
+                    "qTotTran5J",
+                    0
+                ),
 
-                "buyer_power": 1,
+                "avg_volume": 1,
 
-                "real_money": 0,
+                "buy_volume": 1,
 
-                "trend": False,
+                "sell_volume": 1,
+
+                "real_buy": 0,
+
+                "real_sell": 0,
+
+                "previous_price": item.get(
+                    "pClosing",
+                    0
+                ),
 
                 "breakout": False,
 
                 "time": datetime.now().isoformat()
 
             }
+
+
+            indicators = calculate_indicators(
+                stock
+            )
+
+
+            stock.update(
+                indicators
+            )
 
 
             if stock["symbol"]:
