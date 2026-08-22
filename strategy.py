@@ -1,22 +1,38 @@
-# قوانین اولیه شکار AriyoAI TSE Hunter
+# قوانین استراتژی AriyoAI TSE Hunter
 
 
 STRATEGY = {
 
-    # حداقل امتیاز برای هشدار
+    # حداقل امتیاز برای ارسال هشدار
     "min_score": 75,
 
-    # حجم غیرعادی نسبت به میانگین
+
+    # امتیازهای مهم
     "min_volume_ratio": 3,
 
-    # حداقل قدرت خریدار
     "min_buyer_power": 2,
 
-    # نیاز به ورود پول حقیقی
+
+    # فیلترهای تاییدی
+
     "need_real_money": True,
 
-    # نیاز به روند مثبت
-    "need_positive_trend": True
+    "need_positive_trend": True,
+
+    "need_breakout": False,
+
+
+    # سطح‌بندی سیگنال
+
+    "strong_signal_score": 90,
+
+    "medium_signal_score": 75,
+
+
+    # کنترل ریسک
+
+    "max_duplicate_signal": 1
+
 }
 
 
